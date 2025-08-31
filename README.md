@@ -10,5 +10,5 @@ Git Repository fürs Projekt **MealMind**: KI Kalorietracker und Menuvorschlag
 
 ---
 
-## [User Stories](docs/interview.md).
+## [User Stories](docs/user_stories.md)
 
