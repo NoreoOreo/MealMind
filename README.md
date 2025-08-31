@@ -8,3 +8,7 @@ Git Repository fürs Projekt **MealMind**: KI Kalorietracker und Menuvorschlag
 
 ## [Interview: Gewichtsreduktion ohne klassische Diät](docs/interview.md)
 
+---
+
+## [User Stories](docs/interview.md).
+
