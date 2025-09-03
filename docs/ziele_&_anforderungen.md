@@ -12,14 +12,14 @@
 ## Anforderungen
 
 **Funktionale Anforderungen:**
-1. Login und Registrierung (E-Mail, Passwort, ggf. Social Login)
-2. Lebensmittelidentifikation per Barcode oder Foto
-3. Kalorien- und Nährwertberechnung
-4. Personalisierte Menüvorschläge
+1. [Login und Registrierung (E-Mail, Passwort, ggf. Social Login)](https://github.com/NoreoOreo/MealMind/blob/main/docs/user_stories.md#1-registrieren-und-anmelden)
+2. [Lebensmittelidentifikation per Barcode oder Foto](https://github.com/NoreoOreo/MealMind/blob/main/docs/user_stories.md#1-registrieren-und-anmelden)
+3. [Kalorien- und Nährwertberechnung](https://github.com/NoreoOreo/MealMind/blob/main/docs/user_stories.md#1-registrieren-und-anmelden)
+4. [Personalisierte Menüvorschläge](https://github.com/NoreoOreo/MealMind/blob/main/docs/user_stories.md#1-registrieren-und-anmelden)
 
 **Nicht-funktionale Anforderungen:**  
-5. Benutzerfreundliche Oberfläche  
-6. Aufbau der Grundstruktur mit modernem Framework  
-7. Einrichtung von CI/CD-Pipeline und Deployment-Infrastruktur  
+5. [Benutzerfreundliche Oberfläche](https://github.com/NoreoOreo/MealMind/blob/main/docs/user_stories.md#1-registrieren-und-anmelden)  
+6. [Aufbau der Grundstruktur mit modernem Framework](https://github.com/NoreoOreo/MealMind/blob/main/docs/user_stories.md#1-registrieren-und-anmelden)  
+7. [Einrichtung von CI/CD-Pipeline und Deployment-Infrastruktur](https://github.com/NoreoOreo/MealMind/blob/main/docs/user_stories.md#1-registrieren-und-anmelden)  
 8. Sichere Datenspeicherung  
 9. Kompatibilität mit iOS und Android
