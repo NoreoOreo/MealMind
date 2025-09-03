@@ -1,7 +1,7 @@
 [submodule "MealMind-Frontend"]
 	path = MealMind-Frontend
-	url = https://github.com/edonssfall/MealMind-Frontend
+	url = git@github.com:edonssfall/MealMind-Frontend.git
 
 [submodule "MealMind-Backend"]
 	path = MealMind-Backend
-	url = https://github.com/edonssfall/MealMind-Backend
+	url = git@github.com:edonssfall/MealMind-Backend.git

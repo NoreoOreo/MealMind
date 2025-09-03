@@ -12,3 +12,14 @@ Git Repository fürs Projekt **MealMind**: KI Kalorietracker und Menuvorschlag
 
 ## [User Stories](docs/user_stories.md)
 
+--
+
+## Getting Started
+
+TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
+
+Make sure Docker & Compose are installed.
+Copy the 2 repos with 
+```bash
+git submodule update --init --recursive
+```
