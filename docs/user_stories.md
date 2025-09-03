@@ -1,49 +1,68 @@
 # [Home](../README.md)
 # User Stories
-## Registrieren und anmelden
+## 1. Registrieren und anmelden
 **Als Nutzer**
 möchte ich mich bei der App registrieren und anmelden können,
 **um** meine persönlichen Daten, Ernährungshistorie und Einstellungen jederzeit abrufen zu können.
 ### Akzeptanzkriterien:
-- Registrierung mit E-Mail und Passwort möglich.
-- Optionale Anmeldung via Social Login (z. B. Google, Apple).
-- Sichere Passwortverschlüsselung im Backend.
-- Nach Anmeldung Zugriff auf persönliche Ernährungs- und Menü-Daten.
-- Fehlermeldungen bei falschen Login-Daten.
+1. Registrierung mit E-Mail und Passwort möglich.
+2. Optionale Anmeldung via Social Login (z. B. Google, Apple).
+3. Sichere Passwortverschlüsselung im Backend.
+4. Nach Anmeldung Zugriff auf persönliche Ernährungs- und Menü-Daten.
+5. Fehlermeldungen bei falschen Login-Daten.
 
-## Lebensmittel erfassen
+## 2. Lebensmittel erfassen
 **Als Nutzer**
 möchte ich Lebensmittel per Barcode oder Foto scannen können,
 **um** diese schnell und bequem meiner Ernährungsliste hinzuzufügen.
 ### Akzeptanzkriterien:
-- Barcode-Scanner erkennt gängige Lebensmittel.
-- Foto-Erkennung funktioniert für Standardprodukte.
-- Automatisches Hinzufügen zur Lebensmitteldatenbank des Nutzers.
+6. Barcode-Scanner erkennt gängige Lebensmittel.
+7. Foto-Erkennung funktioniert für Standardprodukte.
+8. Automatisches Hinzufügen zur Lebensmitteldatenbank des Nutzers.
 
-## Kalorien- und Nährwerte berechnen
+## 3. Kalorien- und Nährwerte berechnen
 **Als Nutzer**
 möchte ich die Kalorien und Nährwerte meiner erfassten Lebensmittel sehen,
 **um** einen Überblick über meine tägliche Ernährung zu behalten.
 ### Akzeptanzkriterien:
-- Kalorien, Makros (Eiweiß, Fett, Kohlenhydrate) und ggf. Mikronährstoffe werden angezeigt.
-- Tages- und Wochenübersicht verfügbar.
-- Möglichkeit, eigene Portionsgrößen einzutragen.
+9. Kalorien, Makros (Eiweiß, Fett, Kohlenhydrate) und ggf. Mikronährstoffe werden angezeigt.
+10. Tages- und Wochenübersicht verfügbar.
+11. Möglichkeit, eigene Portionsgrößen einzutragen.
 
-## Personalisierte Menüvorschläge
+## 4. Personalisierte Menüvorschläge
 **Als Nutzer**
 möchte ich KI-gestützte Menüvorschläge basierend auf meinen Vorlieben und Zielen erhalten, 
 **um** gesünder und abwechslungsreicher zu essen.
 ### Akzeptanzkriterien:
-- Berücksichtigung von Allergien, Diätformen und Kalorienziel.
-- Menüvorschläge variieren nach Saison und Vorräten.
-- Nutzer kann Vorschläge anpassen oder ablehnen.
+12. Berücksichtigung von Allergien, Diätformen und Kalorienziel.
+13. Menüvorschläge variieren nach Saison und Vorräten.
+14. Nutzer kann Vorschläge anpassen oder ablehnen.
 
-## Sichere und benutzerfreundliche Nutzung
+## 5. Sichere und benutzerfreundliche Nutzung
 **Als Nutzer**
 möchte ich meine Daten sicher gespeichert wissen und die App intuitiv bedienen können,
 **um** ohne Bedenken und mit wenig Aufwand meine Ernährung zu tracken.
 ### Akzeptanzkriterien:
-- Datenverschlüsselung im Backend.
-- Anmeldung per E-Mail/Passwort oder Social Login.
-- Klare Navigation und einfache Benutzeroberfläche.
+15. Datenverschlüsselung im Backend.
+16. Anmeldung per E-Mail/Passwort oder Social Login.
+17. Klare Navigation und einfache Benutzeroberfläche.
  
+## 6. Aufbau der Grundstruktur mit modernem Framework
+**Als Entwickler**
+möchte ich die Grundstruktur der App mit einem modernen Framework (z. B. React Native mit Backend-API) aufsetzen,
+**um** eine saubere, erweiterbare und wartbare Basis für die weitere Entwicklung zu schaffen.
+### Akzeptanzkriterien:
+18. Projektstruktur ist klar definiert (Frontend, Backend, API).
+19. Basisfunktionen (Navigation, State-Management, Authentifizierung) sind vorbereitet.
+20. Code ist nach Best Practices organisiert (z. B. modulare Architektur, Linter/Formatter).
+21. Kompatibilität mit iOS und Android ist getestet.
+
+## 7. Einrichtung von CI/CD-Pipeline und Deployment-Infrastruktur
+**Als Entwickler**
+möchte ich eine CI/CD-Pipeline und Deployment-Infrastruktur einrichten,
+**um** automatisierte Builds, Tests und Deployments sicherzustellen.
+### Akzeptanzkriterien:
+22. Code wird automatisch bei jedem Commit getestet und gebaut.
+23. Automatisches Deployment auf Test- oder Staging-Umgebungen.
+24. Rollback-Möglichkeit bei fehlerhaften Releases.
+25. Dokumentation der Pipeline ist vorhanden.
