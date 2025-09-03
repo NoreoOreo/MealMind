@@ -17,9 +17,9 @@
 3. Kalorien- und Nährwertberechnung
 4. Personalisierte Menüvorschläge
 
-**Nicht-funktionale Anforderungen:**
-5. Benutzerfreundliche Oberfläche
-6. Aufbau der Grundstruktur mit modernem Framework
-7. Einrichtung von CI/CD-Pipeline und Deployment-Infrastruktur
-8. Sichere Datenspeicherung
+**Nicht-funktionale Anforderungen:**  
+5. Benutzerfreundliche Oberfläche  
+6. Aufbau der Grundstruktur mit modernem Framework  
+7. Einrichtung von CI/CD-Pipeline und Deployment-Infrastruktur  
+8. Sichere Datenspeicherung  
 9. Kompatibilität mit iOS und Android
