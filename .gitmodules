@@ -1,6 +1,7 @@
 [submodule "MealMind-Frontend"]
 	path = MealMind-Frontend
 	url = git@github.com:edonssfall/MealMind-Frontend.git
+	branch = main
 
 [submodule "MealMind-Backend"]
 	path = MealMind-Backend
