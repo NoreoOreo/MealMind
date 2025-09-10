@@ -66,3 +66,13 @@ möchte ich eine CI/CD-Pipeline und Deployment-Infrastruktur einrichten,
 23. Automatisches Deployment auf Test- oder Staging-Umgebungen.
 24. Rollback-Möglichkeit bei fehlerhaften Releases.
 25. Dokumentation der Pipeline ist vorhanden.
+
+## 8. Erstellung Mockups
+**Als Entwickler**
+möchte ich Mockups der App-Oberfläche erstellen,
+**um** das Layout, die Farbwelt und die Benutzerführung frühzeitig visualisieren zu können.
+### Akzeptanzkriterien:
+26. Mockups zeigen die zentralen Screens (Startseite, Lebensmittelerfassung, Kalorienübersicht, Menüvorschläge, Einkaufslisten).
+27. Design folgt modernen UI/UX-Prinzipien (klar, konsistent, mobilfreundlich).
+28. Farb- und Typografie-Konzept ist definiert.
+29. Mockups sind als Referenz für die spätere Entwicklung dokumentiert.
