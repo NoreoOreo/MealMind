@@ -42,3 +42,37 @@ Genau: klare Kalorien- & Nährwertberechnung.
 Motivierend: Fortschritt sichtbar, kleine Ziele.
 
 Flexibel: auch beim Reisen leicht nutzbar.
+
+
+
+## Variant B
+
+### 1. Customer Journey
+
+Awareness: sucht immer wieder neue KI Apps
+Consideration: hat Schwierigkeiten immer wieder Neue Menus durchzudenken
+Onboarding: Ziel angeben, Foto nutzen → sofort Berechnung.
+Usage: tägliches Tracken und benutzen von neuen Menus.
+Retention: bleibt, weil es Spass macht & immer neues zu finden und ausprobieren ist.
+
+---
+
+### 2. Persona – John, 64
+
+Beruf: Musiker
+
+Eigenschaften: Mag es zu kochen, hat Probleme neue Menus immer zu erstellen.
+
+Hobbies: Musik schreiben, Kochen
+
+Bedürfnis: Neue Menus zu finden die einfach und sich immer abändern
+
+---
+
+### 4. Kundennutzen (MealMind)
+
+Einfach: Mit wenigen Klicks
+
+Genau: klare Kalorien- & Nährwertberechnung mit Menuvorschlag.
+
+Motivierend: Immer was neues.
