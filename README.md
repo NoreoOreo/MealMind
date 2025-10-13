@@ -20,6 +20,12 @@ Git Repository fürs Projekt **MealMind**: KI Kalorietracker und Menuvorschlag
 
 ## [Customer Journey](docs/customer_journey.md)
 
+---
+
+## [Business Model](docs/business_model.md)
+
+---
+
 ## Getting Started
 
 TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
