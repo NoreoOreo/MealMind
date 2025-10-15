@@ -42,3 +42,14 @@ Unsere App nutzt einfache Automatisierungen und KI-Erkennung, um den Aufwand fü
 ## 4. Was können wir der Kundschaft noch abnehmen, damit ihr Leben leichter und ihre Liebe zu uns grösser wird?
 
 Auszeichnungen und Prämien motivieren zur Nutzung der App.
+
+# Partner
+
+## 1. High Performance Computing
+
+Unser Produkt ist KI-basiert also brauchen wir dies.
+
+## 2. Werbung
+
+Dies ist nicht eine Stärke von uns also wäre dies etwas für einen Partner
+
