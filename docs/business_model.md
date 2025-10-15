@@ -53,3 +53,12 @@ Unser Produkt ist KI-basiert also brauchen wir dies.
 
 Dies ist nicht eine Stärke von uns also wäre dies etwas für einen Partner
 
+# Ausgaben
+
+## 1. Fixkosten
+- Lizenzen für Software und Tools
+- Server- und Hosting-Kosten
+- Entwicklung umgebung und Infrastruktur
+- Miete für Büroräume (falls erforderlich)
+
+- Marketing- und Werbekosten
