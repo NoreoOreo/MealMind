@@ -62,3 +62,17 @@ Dies ist nicht eine Stärke von uns also wäre dies etwas für einen Partner
 - Miete für Büroräume (falls erforderlich)
 
 - Marketing- und Werbekosten
+
+# Einnahmen
+## 1. Abonnements
+- Monatliche/Jährliche Abonnements für Premium-Funktionen
+- Verschiedene Abonnementstufen (Basis, Premium, Familienplan) 3.95.-, 6.95.-, 12.95.- für Gruppe aus 3 Nutzer
+- Kostenlose Testphase für Neukunden
+
+## 2. Werbung
+- In-App-Werbung für kostenlose Nutzer
+- Partnerschaften mit Marken für gezielte Werbung
+
+## 3. Einmalige Käufe
+- Ernährungspläne basierte auf Kunden Ziele
+- Rezeptpakete
