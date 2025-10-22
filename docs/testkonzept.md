@@ -152,7 +152,8 @@ Definition of Done (DoD):
 flowchart LR
   A[Entwickler Push] --> B[CI: Lint + Unit-Tests]
   B --> C{Tests OK?}
-  C -- Nein --> E[Fix & Re-Push]
+  C -- Nein --> E[Fix]
+  E --> A
   C -- Ja --> D[Merge PR]
   D --> F[Tag vX.Y.Z erstellen]
   F --> G[Docker-Build & GHCR-Push]
