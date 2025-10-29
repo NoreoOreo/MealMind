@@ -11,6 +11,14 @@ wartbar ist.
 Alle Hauptfunktionen (Foto-Upload, Analyse, Speicherung und Statistiken) sollen unter realistischen Bedingungen korrekt
 arbeiten.
 
+### Testobjekt
+
+Projekt: MealMind – mobile App (React Native) + Rust-Backend
+Zweck: Barcode/Foto erfassen → KI-Analyse → Nährwerte/Statistiken anzeigen.
+Funktionen (Scope v1): Registrierung/Login, Foto-Upload, KI-Auswertung (Mock/Live), Historie/Statistiken.
+Einsatz: Mobile UX (Expo/APK), Backend via Docker Compose in Test/Prod.
+(Sorgt für gemeinsames Projektverständnis, wie im Skript empfohlen.)
+
 Es soll überprüft werden, ob:
 
 - die KI-Auswertung korrekt ausgelöst wird,
@@ -80,29 +88,31 @@ Testdaten dürfen keine realen Benutzerdaten enthalten.
   cargo clippy --all-targets -- -D warnings
   cargo test --all-features --workspace
     ```
-  
+
   Ergebnis: alle Tests müssen erfolgreich sein.
 
 - **Manuelle Tests (App-Flow)**
-  
+
   In Expo-Umgebung (React Native). Testplan:
 
-  1. App starten
-  2. Login / Registrierung durchführen 
-  3. Foto aufnehmen und hochladen 
-  4. Ergebnis prüfen 
-  5. Statistiken ansehen
+    1. App starten
+    2. Login / Registrierung durchführen
+    3. Foto aufnehmen und hochladen
+    4. Ergebnis prüfen
+    5. Statistiken ansehen
 
   Tester: Leonid Tsarov und Nora Sugden (gegenseitige Review-Prüfung).
 
 ## 7) Testdokumentation
 
 Die Testergebnisse werden dokumentiert:
+
 - in GitHub Issues (bei Fehlern)
-- in docs/testberichte/ als Markdown-Protokolle 
+- in docs/testberichte/ als Markdown-Protokolle
 - mit Screenshots (z. B. von Expo Go)
 
 Beispiel Blackbox-Protokoll:
+
 ```markdown
 # Blackbox-Test BB-01: Foto-Upload & Analyse
 
@@ -111,6 +121,7 @@ Tester: Nora Sugden
 System: Expo Go auf Android, Backend v1.0.0
 
 Schritte:
+
 1. Login mit Benutzer `test@example.com`
 2. Foto aufgenommen (Salat.jpg)
 3. Upload durchgeführt
@@ -135,12 +146,13 @@ Ergebnis: ✅ bestanden
 
 Ein Release gilt als getestet und abgenommen, wenn:
 
-- alle CI-Tests bestanden sind, 
-- manuelle Tests erfolgreich abgeschlossen sind, 
-- kritische Bugs (P0/P1) behoben wurden, 
+- alle CI-Tests bestanden sind,
+- manuelle Tests erfolgreich abgeschlossen sind,
+- kritische Bugs (P0/P1) behoben wurden,
 - Dokumentation aktualisiert ist.
 
 Definition of Done (DoD):
+
 - [ ] Lint + Tests grün
 - [ ] Review durchgeführt
 - [ ] Branch gemergt & Tag erstellt
@@ -148,27 +160,28 @@ Definition of Done (DoD):
 - [ ] App getestet
 
 ## 10) Test- und Release-Prozess (Ablauf)
+
 ```mermaid
 flowchart LR
-  A[Entwickler Push] --> B[CI: Lint + Unit-Tests]
-  B --> C{Tests OK?}
-  C -- Nein --> E[Fix]
-  E --> A
-  C -- Ja --> D[Merge PR]
-  D --> F[Tag vX.Y.Z erstellen]
-  F --> G[Docker-Build & GHCR-Push]
-  G --> H[Deployment mit docker-compose]
-  H --> I[BlackBox-Test 'App-Flow']
-  I --> J[Release freigegeben]
+    A[Entwickler Push] --> B[CI: Lint + Unit-Tests]
+    B --> C{Tests OK?}
+    C -- Nein --> E[Fix]
+    E --> A
+    C -- Ja --> D[Merge PR]
+    D --> F[Tag vX.Y.Z erstellen]
+    F --> G[Docker-Build & GHCR-Push]
+    G --> H[Deployment mit docker-compose]
+    H --> I[BlackBox-Test 'App-Flow']
+    I --> J[Release freigegeben]
 ```
 
 ## 11) Testabschluss und Nachbereitung
 
 Nach jedem Release wird ein kurzer Testbericht erstellt:
 
-- Welche Tests durchgeführt wurden 
-- Ergebnisse / Abweichungen 
-- Gefundene und behobene Fehler 
+- Welche Tests durchgeführt wurden
+- Ergebnisse / Abweichungen
+- Gefundene und behobene Fehler
 - Lessons Learned / Verbesserungen für nächsten Zyklus
 
 Diese Berichte werden im Repo unter `docs/testberichte/` gespeichert.
