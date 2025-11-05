@@ -174,6 +174,18 @@ Dieses Kapitel beschreibt **Authentifizierung & Autorisierung**, **Datenverschl�
 
 ## UI-Design-Spezifikationen (*Nora)
 
+### 1) Skizzen oder Prototypen des Interfaces
+
+ 
+### 2) Gestaltung von Layout
+Das Layout der App ist übersichtlich und benutzerfreundlich gestaltet. Jede Seite diesnt einem einzelnem Teil der App – vom **Login-Screen** über den **Barcode-Reader** bis hin zur **Kalorienübersicht** und den **Menüvorschlägen**.
+Die Elemente sind symmetrisch angeordnet, wodurch ein harmonischer Gesamteindruck entsteht. Eingabefelder, Buttons und Navigationselemente sind einheitlich positioniert, was die Orientierung erleichtert.
+Die Verwendung einer Bottom Navigation Bar sorgt für einen schnellen Zugriff auf die Hauptfunktionen der App. Dadurch kann der Nutzer mühelos zwischen den Bereichen wechseln.
+Die grosszügige Nutzung von Weissraum (negativer Raum) trägt zur Klarheit bei und lenkt die Aufmerksamkeit gezielt auf die wesentlichen Inhalte. Diese fügt auch im Dark-Mode zu grossem Kontrast mit den wesentlichen Inhalten.vZudem wird durch einfache Formen und klare Strukturen ein moderner, minimalistischer Stil unterstützt.
+
+### 3) Farben und Typografie
+Zur Hauptfarbe unserer App benutzen wir das kräftige Grun **#32CD32**. Grün zeigt frischheit und Gesundheit was genau zu uns passt. Accentfarben wären hellere Grüne und werschiedene Weiss/Schwarz/Gray Farben zum Kontrast.
+In unserer Typografie werden serifenlose Schriftarten verwendet, für die Modarnität und Einfachheit. Verschiedene Grössen und Gewichte bringen visuelle Hierarchie und lesbarkeit.
 ## Projektorganisation und Ressourcen
 
 ### Repository-Strategie
