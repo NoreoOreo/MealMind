@@ -28,7 +28,34 @@ Es soll überprüft werden, ob:
 
 ---
 
-## 2) Teststrategie
+## 2) Kritikalität der Funktionseinheiten
+
+| Funktionseinheit                                            | Kritikalität | Begründung                                                                                                                                      |
+|-------------------------------------------------------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Authentifizierung & Autorisierung (JWT, Login, Refresh)** | Hoch         | Kritischer Sicherheitsbereich: Zugriffsschutz auf alle sensiblen Endpunkte. Manipulierte oder gestohlene Tokens könnten Datenlecks verursachen. |
+| **Foto-Upload & Analyse (OpenAI Vision)**                   | Hoch         | Zentrale Kernfunktion der App, rechenintensiv und potenziell fehleranfällig bei grossen Datenmengen.                                            |
+| **Datenpersistenz (PostgreSQL / MinIO)**                    | Hoch         | Verlust oder Korruption der Daten würde das gesamte System unbrauchbar machen.                                                                  |
+| **Statistiken & Anzeige (Frontend)**                        | Mittel       | Fehler wirken sich auf UX aus, beeinträchtigen aber nicht die Datensicherheit.                                                                  |
+| **Registrierung / E-Mail-Funktion**                         | Niedrig      | Kann bei Problemen wiederholt oder manuell korrigiert werden.                                                                                   |
+
+---
+
+## 3) Verbindung zwischen User Stories und Tests
+
+| User Story                                     | Wichtige Testfälle                                            | Testtyp                |
+|------------------------------------------------|---------------------------------------------------------------|------------------------|
+| **#1 Registrieren & Anmelden**                 | UT-01 (Passwort-Hashing), UT-02 (JWT-Signatur), IT-02 (Login) | Unit / Integration     |
+| **#2 Lebensmittel erfassen**                   | IT-03 (Upload + Analyse), E2E-01 (Kompletter Flow)            | Integration / E2E      |
+| **#3 Kalorien & Nährwerte berechnen**          | E2E-01, NF-01 (Performance)                                   | E2E / Nicht-funktional |
+| **#4 Personalisierte Menüvorschläge**          | noch nicht umgesetzt                                          | –                      |
+| **#5 Sichere und benutzerfreundliche Nutzung** | SEC-01 (Unauthorized-Access), Blackbox UX-Test                | Sicherheits- / Manuell |
+| **#6 Framework-Grundstruktur**                 | CI-Lint-/ Build-Tests, Unit-Tests                             | CI / Unit              |
+| **#7 CI/CD-Pipeline & Deployment**             | Pipeline-Run in GitHub Actions                                | CI Automatisierung     |
+| **#8 Mockups / UI-Design**                     | Manuelle UX-Validierung                                       | Blackbox               |
+
+---
+
+## 4) Teststrategie
 
 Die Teststrategie orientiert sich an der Testpyramide:
 
@@ -42,7 +69,7 @@ Die Teststrategie orientiert sich an der Testpyramide:
 
 ---
 
-## 3) Testumgebungen
+## 5) Testumgebungen
 
 | Umgebung                         | Zweck                   | Beschreibung                                          |
 |----------------------------------|-------------------------|-------------------------------------------------------|
@@ -52,7 +79,7 @@ Die Teststrategie orientiert sich an der Testpyramide:
 
 ---
 
-## 4) Testdaten & Vorbereitung
+## 6) Testdaten & Vorbereitung
 
 - **Unit-Tests:** synthetische Testdaten in Rust-Tests (z. B. Dummy-User, Mock-Token).
 - **Integrationstests:** Testdatenbank mit Migrations und Seed-Skript (`migrations/test_seed.sql`).
@@ -63,7 +90,7 @@ Testdaten dürfen keine realen Benutzerdaten enthalten.
 
 ---
 
-## 5) Testfälle (Beispiele)
+## 7) Testfälle (Beispiele)
 
 | ID         | Testfall            | Beschreibung                               | Erwartetes Ergebnis                                           |
 |------------|---------------------|--------------------------------------------|---------------------------------------------------------------|
@@ -79,7 +106,7 @@ Testdaten dürfen keine realen Benutzerdaten enthalten.
 
 ---
 
-## 6) Testdurchführung
+## 8) Testdurchführung
 
 - **Automatisierte Tests (CI)**  
   Jeder Push und Pull-Request löst CI-Pipeline aus:
@@ -103,7 +130,7 @@ Testdaten dürfen keine realen Benutzerdaten enthalten.
 
   Tester: Leonid Tsarov und Nora Sugden (gegenseitige Review-Prüfung).
 
-## 7) Testdokumentation
+## 9) Testdokumentation
 
 Die Testergebnisse werden dokumentiert:
 
@@ -129,10 +156,10 @@ Schritte:
 
 Erwartet: Score > 0, Kalorien > 0  
 Tatsächlich: Score = 8, Kalorien = 430 kcal  
-Ergebnis: ✅ bestanden
+Ergebnis: bestanden
 ```
 
-## 8) Testfrequenz & Verantwortlichkeiten
+## 10) Testfrequenz & Verantwortlichkeiten
 
 | Testart                 | Verantwortlich | Frequenz                |
 |-------------------------|----------------|-------------------------|
@@ -142,7 +169,7 @@ Ergebnis: ✅ bestanden
 | Manuelle Blackbox-Tests | Beide          | vor Go-Live             |
 | Sicherheits-Tests       | Beide          | monatlich / vor Release |
 
-## 9) Qualitätskriterien & Abnahmekriterien
+## 11) Qualitätskriterien & Abnahmekriterien
 
 Ein Release gilt als getestet und abgenommen, wenn:
 
@@ -159,7 +186,7 @@ Definition of Done (DoD):
 - [ ] Docker-Image erfolgreich gebaut
 - [ ] App getestet
 
-## 10) Test- und Release-Prozess (Ablauf)
+## 12) Test- und Release-Prozess (Ablauf)
 
 ```mermaid
 flowchart LR
@@ -175,7 +202,7 @@ flowchart LR
     I --> J[Release freigegeben]
 ```
 
-## 11) Testabschluss und Nachbereitung
+## 13) Testabschluss und Nachbereitung
 
 Nach jedem Release wird ein kurzer Testbericht erstellt:
 
@@ -185,3 +212,9 @@ Nach jedem Release wird ein kurzer Testbericht erstellt:
 - Lessons Learned / Verbesserungen für nächsten Zyklus
 
 Diese Berichte werden im Repo unter `docs/testberichte/` gespeichert.
+
+## 14) Zusammenfassung des Testfortschritts
+
+- **Abdeckungsgrad der Akzeptanzkriterien:** ca. **65 %** (Basisfunktionen vollständig, UI / KI-Teile folgen)
+- **Testautomatisierung:** Unit + Integration Tests laufen in CI/CD-Pipeline
+- **Ziel:** **80 % Abdeckung = Ideal**, ab **90 % = „Sehr gut / Exzellent“**
