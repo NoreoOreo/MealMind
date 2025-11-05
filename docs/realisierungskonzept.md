@@ -73,60 +73,7 @@ Ein Worker verarbeitet die Fotos in einer Warteschlange (z. B. Redis / RabbitMQ)
 
 ## 5) Datenmodell (SQL – MVP)
 
-### Benutzer
-```sql
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
-CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    email TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-```
-
-### Fotos
-```sql
-CREATE TABLE IF NOT EXISTS photos (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    s3_key TEXT NOT NULL,
-    taken_at TIMESTAMPTZ,
-    status TEXT NOT NULL DEFAULT 'uploaded',
-    failure_reason TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-```
-
-### Mahlzeiten
-```sql
-CREATE TABLE IF NOT EXISTS meals (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    photo_id UUID UNIQUE REFERENCES photos(id) ON DELETE SET NULL,
-    title TEXT,
-    notes TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-```
-
-### Nährwerte
-```sql
-CREATE TABLE IF NOT EXISTS meal_nutrition (
-    meal_id UUID PRIMARY KEY REFERENCES meals(id) ON DELETE CASCADE,
-    total_calories_kcal NUMERIC(10,2),
-    protein_g NUMERIC(10,2),
-    fat_g NUMERIC(10,2),
-    carbs_g NUMERIC(10,2),
-    sodium_mg NUMERIC(10,2),
-    sugar_g NUMERIC(10,2),
-    fiber_g NUMERIC(10,2),
-    micros JSONB,
-    ai_raw JSONB,
-    overall_score SMALLINT CHECK (overall_score BETWEEN 0 AND 10),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-```
+![erd](../assets/MeailMind_ERD.drawio.png)
 
 ## Sicherheitskonzept
 
@@ -282,7 +229,32 @@ Es gibt **drei Repositories**:
 - **Release-Bedingung:** Tag nur nach erfolgreichem Review + grüner CI.  
 - **Security-Checks (empfohlen):** `cargo audit` (Backend), Image-Scan (Docker) vor Release-Tag.
 
-TODO: Zeitplan mit Meilsteinen
+## Zeitplan mit Meilsteinen
+```mermaid
+gantt
+    title MealMind Projektzeitplan (MVP)
+    dateFormat  YYYY-MM-DD
+    axisFormat  %d.%m
+
+    section Planung
+    Zieldefinition & Anforderungen          :done,    plan1, 2025-09-20,2025-10-05
+    User Stories & Issues                   :done,    plan2, 2025-10-05,2025-10-15
+    Architektur & Realisierungskonzept      :active,  plan3, 2025-10-15,2025-11-20
+
+    section Entwicklung
+    Backend-Entwicklung (Rust/Axum)         :active,  dev1, 2025-10-25,2025-12-31
+    Frontend-Entwicklung (React Native)     :active,  dev2, 2025-10-25,2025-12-31
+    Unit-Tests & Integration                :active,  dev4, 2025-11-20,2025-12-31
+
+    section Qualität & Dokumentation
+    CI/CD-Pipelines                         :         qa1, 2026-01-01,2026-01-20
+    Testkonzept & Testdurchführung          :active,  qa2, 2025-10-27,2025-11-14
+    Projektdokumentation & Präsentation     :         qa3, 2026-01-05,2026-01-31
+
+    section Abschluss
+    Doku Fertig stellen                     :milestone, ms1, 2025-11-30,1d    
+    Abgabe & Abschlusspräsentation          :milestone, ms2, 2026-02-01,1d
+```
 
 ## Risiken, Wartung und Support
 
