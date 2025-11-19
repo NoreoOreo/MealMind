@@ -25,25 +25,16 @@ Weiterempfehlungen werden mit Premium-Tagen belohnt, um virales Wachstum zu för
 
 # Produktion beschreibung
 
-## 1. Machen wir das selbst, kann es jemand anderes besser, wenn ja wer?
+Wir entwickeln, betreiben und warten die App bewusst selbst, weil darin unsere Kernkompetenz liegt. Für Branding,
+Design und skalierende Reichweite holen wir uns jedoch spezialisierte Partner:innen ins Boot, die mehr Erfahrung auf
+diesem Gebiet haben. Bestimmte Schritte lagern wir direkt an die Community aus: Feedback-Runden, Beta-Tests und
+Einladungsaktionen helfen uns zu wachsen, ohne grosse Zusatzkosten zu verursachen, und binden die Kundschaft in den
+Entwicklungsprozess ein.
 
-Wir entwickeln, betreiben und warten die App selbst, da das unsere Kernkompetenz ist.
-Marketing und Design überlassen wir spezialisierten Partnern, die mehr Erfahrung im Branding und in der
-Reichweitensteigerung haben.
-
-## 2. Können wir gewisse Schritte zur Kundschaft auslagern?
-
-Ja, Nutzer können durch Feedback, Beta-Tests und Einladungsaktionen aktiv zum Wachstum beitragen.
-So werden sie Teil des Entwicklungs- und Marketingprozesses, ohne dass zusätzliche Kosten entstehen.
-
-## 3. Können wir unsere Kernaktivitäten anders gestalten als üblich in der Branche?
-
-Statt auf klassische Werbung setzen wir auf Community-Empfehlungen und organisches Wachstum.
-Unsere App nutzt einfache Automatisierungen und KI-Erkennung, um den Aufwand für Nutzer zu reduzieren.
-
-## 4. Was können wir der Kundschaft noch abnehmen, damit ihr Leben leichter und ihre Liebe zu uns grösser wird?
-
-Auszeichnungen und Prämien motivieren zur Nutzung der App.
+Auch unsere Kernaktivitäten gestalten wir bewusst anders als üblich. Anstatt auf klassische Werbeflächen zu setzen,
+fokussieren wir uns auf Community-Empfehlungen und organisches Wachstum. Die App selbst nutzt automatisierte Abläufe
+und KI-Erkennung, damit der Aufwand für Nutzer:innen minimal bleibt. Zusätzliche Motivation schaffen wir mit
+Auszeichnungen und Prämien, die den Alltag erleichtern und die Bindung zur Marke stärken.
 
 # Partner
 
