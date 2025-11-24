@@ -1,6 +1,6 @@
 # MealMind
-Git Repository fürs Projekt **MealMind**: KI Kalorietracker und Menuvorschlag
 
+Git Repository fürs Projekt **MealMind**: KI Kalorietracker und Menuvorschlag
 
 ## [Ziele und Anforderungen](docs/ziele_%26_anforderungen.md)
 
@@ -40,8 +40,13 @@ Git Repository fürs Projekt **MealMind**: KI Kalorietracker und Menuvorschlag
 
 TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
 
-Make sure Docker & Compose are installed.
-Copy the 2 repos with 
-```bash
-git submodule update --init --recursive
-```
+1. Make sure Docker & Compose are installed.
+2. Copy the 2 repos with
+    ```bash
+    git submodule update --init --recursive
+    ```
+3. Copy .env.example and paste data
+4. start container
+    ```bash
+    docker compose up -d
+    ```
