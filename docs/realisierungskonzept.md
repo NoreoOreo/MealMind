@@ -5,12 +5,15 @@
 ## 1) Ziele und Nicht-Ziele
 
 **Ziel (MVP):**  
-Ein funktionierendes Anwendungssystem, das anhand eines oder mehrerer Fotos die Nährwerte eines Gerichts (Kalorien, Proteine, Fette) analysiert und eine Gesamteinschätzung des Gerichts von 0 – 10 liefert.  
-Die App erstellt anschliessend für den Benutzer eine persönliche Ernährungsstatistik in Form von Tages- und Wochenübersichten.
+Ein funktionierendes Anwendungssystem, das anhand eines oder mehrerer Fotos die Nährwerte eines Gerichts (Kalorien,
+Proteine, Fette) analysiert und eine Gesamteinschätzung des Gerichts von 0 – 10 liefert.  
+Die App erstellt anschliessend für den Benutzer eine persönliche Ernährungsstatistik in Form von Tages- und
+Wochenübersichten.
 
 **Nicht-Ziele (im MVP):**
-- Exakte Gewichtserkennung der Portion.  
-- Soziale Funktionen, Teilen oder Menü-Empfehlungen.  
+
+- Exakte Gewichtserkennung der Portion.
+- Soziale Funktionen, Teilen oder Menü-Empfehlungen.
 - Eigene KI-Modelle (im MVP wird **OpenAI Vision** genutzt).
 
 ---
@@ -19,12 +22,14 @@ Die App erstellt anschliessend für den Benutzer eine persönliche Ernährungsst
 
 - **Frontend (React Native)**  
   Mobile App für iOS/Android, ausschliesslich für Geräte.  
-  Funktionen: Login, Fotoaufnahme (mehrere Fotos pro Mahlzeit möglich), Anzeige der Mahlzeiten und grafische Statistiken.  
+  Funktionen: Login, Fotoaufnahme (mehrere Fotos pro Mahlzeit möglich), Anzeige der Mahlzeiten und grafische
+  Statistiken.  
   Die App kennt die Backend-URL, über die sie API-Requests ausführt.
 
 - **Backend (Rust / Axum)**  
-  Authentifizierung (JWT), Bereitstellung von Pre-Signed URLs, Upload-Bestätigung, Aufruf der OpenAI Vision API, Speicherung der Ergebnisse in PostgreSQL, Berechnung von Statistiken.  
-  Der Backend-Endpunktname für die Upload-Bestätigung kann variieren (z. B. `/api/upload` oder `/photos/confirm`).
+  Authentifizierung (JWT), Bereitstellung von Pre-Signed URLs, Upload-Bestätigung, Aufruf der OpenAI Vision API,
+  Speicherung der Ergebnisse in PostgreSQL, Berechnung von Statistiken.  
+  Der Backend-Endpunktname für die Upload-Bestätigung kann variieren.
 
 - **Datenbank (PostgreSQL)**  
   Speicherung von Benutzern, Fotos, analysierten Mahlzeiten und aggregierten Nährwertdaten.
@@ -42,126 +47,161 @@ Die App erstellt anschliessend für den Benutzer eine persönliche Ernährungsst
 
 ## 3) Ablauf (MVP – ohne Queue)
 
-1. Die App fordert vom Backend eine Pre-Signed URL an (`POST /photos/presign`).  
-   → Der React Native-Client weiss, wo sich das Backend befindet.  
-2. Das Foto wird **direkt an MinIO** hochgeladen (anstelle von AWS S3).  
-3. Die App meldet den Upload über `POST /photos/confirm` (oder gleichwertigen Endpoint).  
-   Das Backend ruft **OpenAI Vision** auf, speichert die Analyse und Nährwerte in der Datenbank.  
-4. Der Benutzer kann seine Daten über `/meals` oder `/stats` abrufen.  
-   Die **Statistiken werden grafisch** dargestellt (z. B. Balken- oder Kreisdiagramme über gegessene Kalorien, Proteine, Fette …).
+1. **Foto-Upload an das Backend**
+    - Die App sendet das Foto direkt an das Backend (`POST /meals`).
+    - Das Backend speichert das Foto lokal bzw. im Objektspeicher.
+    - Es wird eine neue Meal-Entität mit Status `pending` erstellt.
+    - Das Backend gibt als Antwort **HTTP 200** und die erzeugte **Meal-ID** zurück.
+
+2. **Asynchrone Analyse durch das Backend**
+    - Nachdem die Meal-ID erstellt wurde, startet das Backend **asynchron** die Analyse:
+        - Das gespeicherte Foto wird an **OpenAI Vision** gesendet.
+        - Die Antwort der KI wird verarbeitet (Kalorien, Protein, Fett, Bewertung).
+        - Die Daten werden in der Datenbank gespeichert.
+        - Der Meal-Status wird zu `done` oder bei Fehlern zu `error` gesetzt.
+
+3. **Polling vom Client über Meal-ID**
+    - Die App pollt alle 5 Sekunden den Endpunkt:
+      ```
+      GET /meals/{meal_id}
+      ```
+
+4. **Abruf der finalen Analyse**
+    - Sobald der Status `done` ist, holt die App die vollständigen Daten über:
+      ```
+      GET /meals/{meal_id}
+      ```
 
 ### Zukunft (mit Queue)
-Später erfolgt die Analyse **asynchron**: Nach dem Upload wird der Datensatz mit Status `processing` gespeichert.  
-Ein Worker verarbeitet die Fotos in einer Warteschlange (z. B. Redis / RabbitMQ) und aktualisiert das Ergebnis in der Datenbank.
 
-**Analyseart im MVP:** synchron (Client wartet bis zu 10 – 20 Sekunden).  
+- **Asynchrone Verarbeitung mit Queue**
+    - Nach dem Upload wird der Datensatz mit Status `processing` gespeichert.
+    - Ein Worker verarbeitet die Fotos in einer Warteschlange (z. B. **Redis** oder **RabbitMQ**) im Hintergrund.
+    - Nach Abschluss der Analyse schreibt der Worker das Ergebnis (Nährwerte, Bewertung, Status `done` bzw. `error`) in
+      die Datenbank.
+
+- **Echtzeit-Updates via WebSockets (statt Polling)**
+    - Die App öffnet nach dem Erstellen eines Meals eine **WebSocket-Verbindung** zum Backend.
+    - Sie meldet sich dort mit der entsprechenden `meal_id` bzw. dem Benutzer an.
+    - Sobald sich der Status ändert (z. B. von `processing` zu `done` oder `error`), sendet das Backend ein **Event**
+      über den WebSocket-Kanal.
+    - Die App erhält so **sofortige Status-Updates**, ohne alle 5 Sekunden pollen zu müssen, und kann direkt das
+      Resultat laden und anzeigen.
+
+**Analyseart im MVP:** synchron (Client wartet bis zu 10 – 20 Sekunden).
 
 ---
 
 ## 4) Komponenten und Verantwortlichkeiten
 
-| Komponente        | Verantwortung                                                               |
-|-------------------|-----------------------------------------------------------------------------|
-| **Auth**          | Registrierung, Login, Refresh, JWT-Signierung                               |
-| **Photos**        | Pre-Signed URL, Upload, Statusverwaltung                                    |
-| **VisionService** | Kommunikation mit OpenAI Vision, Parsing der Antworten                      |
-| **Nutrition**     | Speicherung der Nährwertdaten (Kalorien, Protein, Fett, Gesamteinschätzung) |
-| **Stats**         | Berechnung von Tages- und Wochenstatistiken, Ausgabe für Diagramme          |
-| **Infra / CI/CD** | Docker, GitHub Actions, automatischer Deploy (Argo CD oder Server-Trigger)  |
+| Komponente        | Verantwortung                                                                                                                                                    |
+|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Auth**          | Registrierung, Login, Refresh, JWT-Signierung, Validierung der Tokens                                                                                            |
+| **Photos**        | Entgegennahme des Foto-Uploads, Dekodierung/Validierung der Bilder, Speichern der Dateien in MinIO, Erzeugen von temporären (Pre-Signed) Download-Links          |
+| **Meals**         | Zentrale Geschäftslogik: Erstellen von Meal-Einträgen, Verknüpfung mit Fotos, Verwalten des Status (pending/processing/done/error), Listen- und Detail-Endpunkte |
+| **VisionService** | Kommunikation mit OpenAI Vision, Weiterleitung der Bilddaten, Parsing der Antworten und Rückgabe der analysierten Nährwerte an die Meal-Logik                    |
+| **Nutrition**     | Speicherung der Nährwertdaten pro Meal (Kalorien, Protein, Fett, Gesamteinschätzung) als Basis für spätere Auswertungen                                          |
+| **Stats**         | Aggregation der Daten (z. B. per SQL-Gruppierung nach Tag/Woche) auf Basis von Meals/Nutrition und Aufbereitung der Werte für Diagramme in der App               |
+| **Infra / CI/CD** | Docker-Container, GitHub Actions-Pipelines, Build & Deployment (z. B. via Argo CD oder Server-Trigger), Datenbank- und MinIO-Betrieb                             |
 
 ---
 
 ## 5) Datenmodell (SQL – MVP)
 
-![erd](../assets/MeailMind_ERD.drawio.png)
+![erd](../assets/MeailMind_ERD.png)
 
 ## Sicherheitskonzept
 
-Dieses Kapitel beschreibt **Authentifizierung & Autorisierung**, **Datenverschlüsselung** (in Transit & at Rest) sowie **Sicherheitsrichtlinien** inkl. proaktiver Massnahmen, Schwachstellen-Management und Notfallplanung.
+Dieses Kapitel beschreibt **Authentifizierung & Autorisierung**, **Datenverschlüsselung** (in Transit & at Rest) sowie
+**Sicherheitsrichtlinien** inkl. proaktiver Massnahmen, Schwachstellen-Management und Notfallplanung.
 
 ### 1) Authentifizierung & Autorisierung
 
 - **JWT (Access/Refresh)**
-  - Access-Token: kurze TTL (z. B. 15 min), Refresh-Token: längere TTL (z. B. 7–14 Tage).
-  - Signatur mit starkem Secret (mind. 32 Byte) oder Asymmetrie (z. B. EdDSA/ES256).
-  - Claims: `sub` (User-ID), `iss`, `aud`, `exp`, `iat`, `kind` (access/refresh).
-  - Token-Übermittlung per `Authorization: Bearer <token>`.
+    - Access-Token: kurze TTL (z. B. 15 min), Refresh-Token: längere TTL (z. B. 7–14 Tage).
+    - Signatur mit starkem Secret (mind. 32 Byte) oder Asymmetrie (z. B. EdDSA/ES256).
+    - Claims: `sub` (User-ID), `iss`, `aud`, `exp`, `iat`, `kind` (access/refresh).
+    - Token-Übermittlung per `Authorization: Bearer <token>`.
 - **Passwörter**
-  - Speicherung ausschliesslich gehasht (**Argon2**, moderner Memory-hard-KDF).
-  - Minimale Passwortlänge (z. B. ≥ 8–12), optionale Pwned-Check/Entropie-Regeln.
+    - Speicherung ausschliesslich gehasht (**Argon2**, moderner Memory-hard-KDF).
+    - Minimale Passwortlänge (z. B. ≥ 8–12), optionale Pwned-Check/Entropie-Regeln.
 - **Autorisierung**
-  - Backend prüft JWT und ableitet Rechte (MVP: Benutzerrolle „user“).
-  - Später erweiterbar (z. B. Rollen/Scopes).
+    - Das Backend extrahiert die Benutzer-ID aus dem gültigen JWT und verwendet diese, um nur die Daten des angemeldeten
+      Benutzers bereitzustellen.
+    - Es existiert im MVP **keine Rollenverwaltung** und **kein Admin-Konzept**.
+    - Alle Endpunkte arbeiten nach dem Prinzip: *„Benutzer sieht nur seine eigenen Ressourcen“*.
+    - Eine spätere Erweiterung um Rollen oder Scopes wäre möglich, ist aber im MVP nicht vorgesehen.
 - **Brute-Force & Abuse-Schutz  (Im Zukunft)**
-  - **IP-basiertes Rate-Limiting** an der API (Login/Refresh/Upload enger drosseln).
-  - Optional: Progressive Delays, temporäre Account-Sperre nach N Fehlversuchen.
+    - **IP-basiertes Rate-Limiting** an der API (Login/Refresh/Upload enger drosseln).
+    - Optional: Progressive Delays, temporäre Account-Sperre nach N Fehlversuchen.
 - **CORS & Headers**
-  - CORS auf bekannte App-Origins einschränken; Security-Header (HSTS, no-sniff).
+    - CORS auf bekannte App-Origins einschränken; Security-Header (HSTS, no-sniff).
 
 ### 2) Datenverschlüsselung
 
 - **In Transit**
-  - Ausnahmslos **TLS** (HTTPS) zwischen App ↔ Backend und Backend ↔ MinIO/OpenAI.
-  - Strikte TLS-Konfiguration (moderne Cipher Suites), HSTS aktiv.
+    - Ausnahmslos **TLS** (HTTPS) zwischen App ↔ Backend und Backend ↔ MinIO/OpenAI.
+    - Strikte TLS-Konfiguration (moderne Cipher Suites), HSTS aktiv.
 - **At Rest**
-  - **PostgreSQL**: Datenträger/Volume-Verschlüsselung (z. B. LUKS/Cloud-Volume-Encryption).
-  - **MinIO**: Serverseitige Verschlüsselung (SSE) aktivieren; Keys sicher verwalten.
-  - **Backups**: Verschlüsselt ablegen (z. B. GPG/KMS), getrennt vom Primärsystem.
+    - **PostgreSQL**: Datenträger/Volume-Verschlüsselung (z. B. LUKS/Cloud-Volume-Encryption).
+    - **MinIO**: Serverseitige Verschlüsselung (SSE) aktivieren; Keys sicher verwalten.
+    - **Backups**: Verschlüsselt ablegen (z. B. GPG/KMS), getrennt vom Primärsystem.
 - **Secrets-Management**
-  - Keine Secrets im Code/Repo. Nutzung von **GitHub Secrets** / ENV-Variablen.
-  - Regelmässige Rotation von: JWT-Keys, DB-Creds, MinIO-Keys, API-Keys (OpenAI).
+    - Keine Secrets im Code/Repo. Nutzung von **GitHub Secrets** / ENV-Variablen.
+    - Regelmässige Rotation von: JWT-Keys, DB-Creds, MinIO-Keys, API-Keys (OpenAI).
 
 ### 3) Zugriffskontrolle & Prinzipien
 
 - **Least Privilege**
-  - **DB-Zugänge**: 1× `root` (nur für Administration), **1× App-User mit minimalen Rechten** (nur CRUD auf benötigte Schemas/Tabellen).
-  - MinIO: Bucket-Policies minimal halten; nur Pre-Signed URLs für Upload/Download.
+    - **DB-Zugänge**: 1× `root` (nur für Administration), **1× App-User mit minimalen Rechten** (nur CRUD auf benötigte
+      Schemas/Tabellen).
+    - MinIO: Bucket-Policies minimal halten; nur Pre-Signed URLs für Upload/Download.
 - **Isolation**
-  - Container ohne Root-User ausführen; Read-only Dateisystem, nur benötigte Ports.
-  - Netzwerk-Policies (später/K8s): Backend darf nur zur DB/MinIO/OpenAI sprechen.
+    - Container ohne Root-User ausführen; Read-only Dateisystem, nur benötigte Ports.
+    - Netzwerk-Policies (später/K8s): Backend darf nur zur DB/MinIO/OpenAI sprechen.
 - **Eingabevalidierung**
-  - Strikte Prüfung von Request-Bodies, **MIME-Type & Grösse** der Bilder (z. B. ≤ 8 MB).
-  - HEIC → JPEG-Konvertierung auf dem Client oder kontrolliert im Backend.
+    - Strikte Prüfung von Request-Bodies, **MIME-Type & Grösse** der Bilder (z. B. ≤ 8 MB).
+    - HEIC → JPEG-Konvertierung auf dem Client oder kontrolliert im Backend.
 
 ### 4) Proaktive Sicherheitsmassnahmen
 
 - **Code-Qualität**
-  - CI: `cargo fmt`, `clippy -D warnings`.
-  - **SAST**: Clippy-Regeln, optionale Erweiterungen.
+    - CI: `cargo fmt`, `clippy -D warnings`.
+    - **SAST**: Clippy-Regeln, optionale Erweiterungen.
 - **Patch-/Update-Prozess**
-  - Regelmässige Updates von Abhängigkeiten und Basis-Images (Alpine/Rust).
+    - Regelmässige Updates von Abhängigkeiten und Basis-Images (Alpine/Rust).
 - **Logging & Monitoring**
-  - Strukturierte Logs (keine PII/Secrets), Korrelation pro Request.
-  - Metriken: Rate-Limit-Treffer, Fehlversuche Login, 4xx/5xx-Quoten, Latenzen.
+    - Strukturierte Logs (keine PII/Secrets), Korrelation pro Request.
+    - Metriken: Rate-Limit-Treffer, Fehlversuche Login, 4xx/5xx-Quoten, Latenzen.
 - **Konfigurationshärtung**
-  - CORS/Headers eingeschränkt, nur benötigte Endpunkte offen.
-  - Pre-Signed URLs: kurze Gültigkeit (z. B. 5–10 Minuten).
+    - CORS/Headers eingeschränkt, nur benötigte Endpunkte offen.
+    - Pre-Signed URLs: kurze Gültigkeit (z. B. 5–10 Minuten).
 
 ### 5) Schwachstellen-Management
 
 - **Prozess**
-  - Eingehende Findings (Scans, Meldungen) triagieren → Priorisieren → Fix planen → Verifizieren → Dokumentieren.
-  - **SLAs** vorschlagen: Kritisch ≤ 24–72 h, Hoch ≤ 7 Tage, Mittel/Niedrig zeitnah.
+    - Eingehende Findings (Scans, Meldungen) triagieren → Priorisieren → Fix planen → Verifizieren → Dokumentieren.
+    - **SLAs** vorschlagen: Kritisch ≤ 24–72 h, Hoch ≤ 7 Tage, Mittel/Niedrig zeitnah.
 - **Transparenz**
-  - Changelog/Release-Notes; Versionierung der Sicherheitsfixes (SemVer/Patch).
+    - Changelog/Release-Notes; Versionierung der Sicherheitsfixes (SemVer/Patch).
 - **Tests**
-  - Regressionstests für sicherheitsrelevante Bereiche (Auth, Upload, Parser).
+    - Regressionstests für sicherheitsrelevante Bereiche (Auth, Upload, Parser).
 
 ### 6) Notfallplanung (Incident Response)
 
 - **Erkennung & Alarmierung**
-  - Alerts bei Anomalien (z. B. Login-Fehlerrate, plötzliche 5xx-Spikes).
+    - Alerts bei Anomalien (z. B. Login-Fehlerrate, plötzliche 5xx-Spikes).
 - **Eindämmung**
-  - **Tokens widerrufen** (Refresh-Liste/Key-Rotation), verdächtige Zugänge sperren.
-  - Pre-Signed Policy verschärfen oder temporär deaktivieren (nur Admin-Upload).
+    - **Tokens widerrufen** (Refresh-Liste/Key-Rotation), verdächtige Zugänge sperren.
+    - Pre-Signed Policy verschärfen oder temporär deaktivieren (nur Admin-Upload).
 - **Beseitigung & Wiederherstellung**
-  - **Secrets rotieren** (JWT, DB, MinIO, OpenAI).
-  - Systeme neu deployen (saubere Images); ggf. Read-only Modus.
-  - **Wiederherstellen** aus **verschlüsselten Backups**; **Restore-Tests** regelmässig durchführen.
+    - **Secrets rotieren** (JWT, DB, MinIO, OpenAI).
+    - Systeme neu deployen (saubere Images); ggf. Read-only Modus.
+    - **Wiederherstellen** aus **verschlüsselten Backups**; **Restore-Tests** regelmässig durchführen.
 - **RPO/RTO**
-  - Zielwerte festlegen (z. B. RPO ≤ 1 h, RTO ≤ 4 h) je nach Projektkontext.
+    - Zielwerte festlegen (z. B. RPO ≤ 1 h, RTO ≤ 4 h) je nach Projektkontext.
 - **Dokumentation**
-  - Incident-Report (Ursache, Impact, Massnahmen), Lessons Learned, Präventionsplan.
+    - Incident-Report (Ursache, Impact, Massnahmen), Lessons Learned, Präventionsplan.
 
 ### 7) Backup-Strategie
 
@@ -176,16 +216,27 @@ Dieses Kapitel beschreibt **Authentifizierung & Autorisierung**, **Datenverschl�
 
 ### 1) Skizzen oder Prototypen des Interfaces
 
- 
+# TODO: Hier brauchen wir Skizze
+
 ### 2) Gestaltung von Layout
-Das Layout der App ist übersichtlich und benutzerfreundlich gestaltet. Jede Seite diesnt einem einzelnem Teil der App – vom **Login-Screen** über den **Barcode-Reader** bis hin zur **Kalorienübersicht** und den **Menüvorschlägen**.
-Die Elemente sind symmetrisch angeordnet, wodurch ein harmonischer Gesamteindruck entsteht. Eingabefelder, Buttons und Navigationselemente sind einheitlich positioniert, was die Orientierung erleichtert.
-Die Verwendung einer Bottom Navigation Bar sorgt für einen schnellen Zugriff auf die Hauptfunktionen der App. Dadurch kann der Nutzer mühelos zwischen den Bereichen wechseln.
-Die grosszügige Nutzung von Weissraum (negativer Raum) trägt zur Klarheit bei und lenkt die Aufmerksamkeit gezielt auf die wesentlichen Inhalte. Diese fügt auch im Dark-Mode zu grossem Kontrast mit den wesentlichen Inhalten.vZudem wird durch einfache Formen und klare Strukturen ein moderner, minimalistischer Stil unterstützt.
+
+Das Layout der App ist übersichtlich und benutzerfreundlich gestaltet. Jede Seite diesnt einem einzelnem Teil der App –
+vom **Login-Screen** über den **Barcode-Reader** bis hin zur **Kalorienübersicht** und den **Menüvorschlägen**.
+Die Elemente sind symmetrisch angeordnet, wodurch ein harmonischer Gesamteindruck entsteht. Eingabefelder, Buttons und
+Navigationselemente sind einheitlich positioniert, was die Orientierung erleichtert.
+Die Verwendung einer Bottom Navigation Bar sorgt für einen schnellen Zugriff auf die Hauptfunktionen der App. Dadurch
+kann der Nutzer mühelos zwischen den Bereichen wechseln.
+Die grosszügige Nutzung von Weissraum (negativer Raum) trägt zur Klarheit bei und lenkt die Aufmerksamkeit gezielt auf
+die wesentlichen Inhalte. Diese fügt auch im Dark-Mode zu grossem Kontrast mit den wesentlichen Inhalten.vZudem wird
+durch einfache Formen und klare Strukturen ein moderner, minimalistischer Stil unterstützt.
 
 ### 3) Farben und Typografie
-Zur Hauptfarbe unserer App benutzen wir das kräftige Grun **#32CD32**. Grün zeigt frischheit und Gesundheit was genau zu uns passt. Accentfarben wären hellere Grüne und werschiedene Weiss/Schwarz/Gray Farben zum Kontrast.
-In unserer Typografie werden serifenlose Schriftarten verwendet, für die Modarnität und Einfachheit. Verschiedene Grössen und Gewichte bringen visuelle Hierarchie und lesbarkeit.
+
+Zur Hauptfarbe unserer App benutzen wir das kräftige Grun **#32CD32**. Grün zeigt frischheit und Gesundheit was genau zu
+uns passt. Accentfarben wären hellere Grüne und werschiedene Weiss/Schwarz/Gray Farben zum Kontrast.
+In unserer Typografie werden serifenlose Schriftarten verwendet, für die Modarnität und Einfachheit. Verschiedene
+Grössen und Gewichte bringen visuelle Hierarchie und lesbarkeit.
+
 ## Projektorganisation und Ressourcen
 
 ### Repository-Strategie
@@ -198,28 +249,32 @@ Es gibt **drei Repositories**:
 | **mealmind-frontend**          | Mobile App (React Native)  | RN-Code, App-Build-Pipeline                                                 | **Push/PR:** Unit-Tests/Lint. **Tag:** Release-Build (App-Artefakte).                           |
 | **mealmind-backend**           | Backend (Rust/Axum)        | Rust-Code, DB-Migrations, Dockerfile                                        | **Push/PR:** Lint/Unit-Tests/Build. **Tag:** Docker-Build & Push (GHCR).                        |
 
-> Die Trennung in ein Haupt-Repo und zwei **separate Repos** (Frontend/Backend) dient der klaren Verantwortlichkeit, sauberem Lebenszyklus je Teilprojekt und einfacher Automatisierung. Das Haupt-Repo verweist auf die Service-Images per Tag und enthält die **docker-compose**-Definition für das Deployment.
+> Die Trennung in ein Haupt-Repo und zwei **separate Repos** (Frontend/Backend) dient der klaren Verantwortlichkeit,
+> sauberem Lebenszyklus je Teilprojekt und einfacher Automatisierung. Das Haupt-Repo verweist auf die Service-Images per
+> Tag und enthält die **docker-compose**-Definition für das Deployment.
 
 ### Workflow & Boards
 
-- **Arbeitsweise:** Kanban-Board im Github mit Spalten *Todo → In Progress → In Review → Done*.  
-- **Code Review:** primär **Selbstreview**; für Tasks in **Review** bestätigt die zweite Person per manueller Funktionsprüfung („durchklicken“), danach Verschiebung nach **Done**.  
+- **Arbeitsweise:** Kanban-Board im Github mit Spalten *Todo → In Progress → In Review → Done*.
+- **Code Review:** primär **Selbstreview**; für Tasks in **Review** bestätigt die zweite Person per manueller
+  Funktionsprüfung („durchklicken“), danach Verschiebung nach **Done**.
 - **Issues/Stories:** gepflegt im jeweiligen Service-Repo; das Haupt-Repo hält übergreifende Roadmap/Doku.
 
 ### CI/CD-Politik
 
 - **Continuous Integration (alle Repos):**
-  - **Push / PR:** Lint + Unit-Tests + (sofern sinnvoll) Build-Artefakte.
+    - **Push / PR:** Lint + Unit-Tests + (sofern sinnvoll) Build-Artefakte.
 - **Continuous Delivery (nur bei Tags):**
-  - **Backend:** Docker-Image wird **nur bei Tag** gebaut und in **GHCR** veröffentlicht.
-  - **Frontend:** (optional) Release-Build nur bei Tag.
-  - **Deployment:** Das **mealmind-main**-Repo enthält `docker-compose.yml`; Deploy zieht die **getaggten** Images (Backend) und startet/aktualisiert die Services.  
-    (Alternativ: Argo CD kann auf neue Tags reagieren und den Rollout triggern.)
+    - **Backend:** Docker-Image wird **nur bei Tag** gebaut und in **GHCR** veröffentlicht.
+    - **Frontend:** (optional) Release-Build nur bei Tag.
+    - **Deployment:** Das **mealmind-main**-Repo enthält `docker-compose.yml`; Deploy zieht die **getaggten** Images (
+      Backend) und startet/aktualisiert die Services.  
+      (Alternativ: Argo CD kann auf neue Tags reagieren und den Rollout triggern.)
 
 ### Team & Rollen
 
-- **Team:** Leonid Tsarov, Nora Sugden.  
-- **Rollen (pragmatisch):** beide entwickeln Features; Reviews im 4-Augen-Prinzip beim Status **Review**.  
+- **Team:** Leonid Tsarov, Nora Sugden.
+- **Rollen (pragmatisch):** beide entwickeln Features; Reviews im 4-Augen-Prinzip beim Status **Review**.
 - **Kommunikation:** kurze Status-Syncs nach Bedarf; Entscheidungen/Doku im `docs/` des Haupt-Repos.
 
 ### Ressourcen
@@ -236,57 +291,59 @@ Es gibt **drei Repositories**:
 
 ### Quality Gates
 
-- **Backend (Rust):** `cargo fmt --check`, `clippy -D warnings`, Unit-Tests grün.  
-- **Frontend (RN):** Lint/Tests grün.  
-- **Release-Bedingung:** Tag nur nach erfolgreichem Review + grüner CI.  
+- **Backend (Rust):** `cargo fmt --check`, `clippy -D warnings`, Unit-Tests grün.
+- **Frontend (RN):** Lint/Tests grün.
+- **Release-Bedingung:** Tag nur nach erfolgreichem Review + grüner CI.
 - **Security-Checks (empfohlen):** `cargo audit` (Backend), Image-Scan (Docker) vor Release-Tag.
 
 ## Zeitplan mit Meilsteinen
+
 ```mermaid
 gantt
     title MealMind Projektzeitplan (MVP)
-    dateFormat  YYYY-MM-DD
-    axisFormat  %d.%m
+    dateFormat YYYY-MM-DD
+    axisFormat %d.%m
 
     section Planung
-    Zieldefinition & Anforderungen          :done,    plan1, 2025-09-20,2025-10-05
-    User Stories & Issues                   :done,    plan2, 2025-10-05,2025-10-15
-    Architektur & Realisierungskonzept      :active,  plan3, 2025-10-15,2025-11-20
+        Zieldefinition & Anforderungen: done, plan1, 2025-09-20, 2025-10-05
+        User Stories & Issues: done, plan2, 2025-10-05, 2025-10-15
+        Architektur & Realisierungskonzept: done, plan3, 2025-10-15, 2025-11-20
 
     section Entwicklung
-    Backend-Entwicklung (Rust/Axum)         :active,  dev1, 2025-10-25,2025-12-31
-    Frontend-Entwicklung (React Native)     :active,  dev2, 2025-10-25,2025-12-31
-    Unit-Tests & Integration                :active,  dev4, 2025-11-20,2025-12-31
+        Backend-Entwicklung (Rust/Axum): active, dev1, 2025-10-25, 2025-12-31
+        Frontend-Entwicklung (React Native): active, dev2, 2025-10-25, 2025-12-31
+        Unit-Tests & Integration: active, dev4, 2025-11-20, 2025-12-31
 
     section Qualität & Dokumentation
-    CI/CD-Pipelines                         :         qa1, 2026-01-01,2026-01-20
-    Testkonzept & Testdurchführung          :active,  qa2, 2025-10-27,2025-11-14
-    Projektdokumentation & Präsentation     :         qa3, 2026-01-05,2026-01-31
+        CI/CD-Pipelines: qa1, 2026-01-01, 2026-01-20
+        Testkonzept & Testdurchführung: active, qa2, 2025-10-27, 2025-11-30
+        Projektdokumentation & Präsentation: qa3, 2026-01-05, 2026-01-31
 
     section Abschluss
-    Doku Fertig stellen                     :milestone, ms1, 2025-11-30,1d    
-    Abgabe & Abschlusspräsentation          :milestone, ms2, 2026-02-01,1d
+        Doku Fertig stellen: milestone, ms1, 2025-11-30, 1d
+        Abgabe & Abschlusspräsentation: milestone, ms2, 2026-02-01, 1d
 ```
 
 ## Risiken, Wartung und Support
 
 ### 1) Identifikation potenzieller Risiken
 
-| Kategorie | Risiko | Beschreibung / mögliche Ursache | Gegenmassnahmen |
-|------------|---------|---------------------------------|----------------|
-| **Technologie** | Fehlende Stabilität oder Bugs in neuen Frameworks (Rust, Axum, React Native) | Da moderne Tools verwendet werden, können Bibliotheken oder Toolchains noch instabil sein. | Regelmässige Updates, Tests, Nutzung stabiler Versionen, Backup-Strategie. |
-| **Integration (OpenAI)** | API-Änderungen, Rate Limits oder Kostensteigerung bei OpenAI. | Abhängigkeit von externem Dienst. | Caching, Rate-Limit-Handling, Fallback-Strategie, Dokumentation der Limits. |
-| **Ressourcen** | Zeitmangel oder Ausfall von Teammitgliedern. | Projektarbeit neben Schule/Arbeit, begrenzte Zeitfenster. | Klare Planung, Priorisierung der Kernfunktionen, einfache MVP-Ziele. |
-| **Infrastruktur** | Datenverlust oder Ausfall von MinIO/PostgreSQL. | Fehlerhafte Deploys, Hardware-Probleme. | Regelmässige, verschlüsselte Backups, Restore-Tests, Monitoring. |
-| **Sicherheit** | Verlust oder Missbrauch von API-Keys / JWT-Secrets. | Unachtsamer Umgang mit Secrets, fehlende Rotation. | Nutzung von GitHub-Secrets, regelmässige Rotation, Zugriff nur für Admin. |
-| **Skalierung** | Lange Antwortzeiten bei vielen Fotos / Nutzern. | Vision-Analyse ist rechenintensiv. | Einführung einer Warteschlange (Queue) und Worker-Prozesse nach MVP. |
-| **Benutzerakzeptanz** | KI-Analyse liefert ungenaue Werte. | Vision-Modelle sind nicht 100 % exakt. | Transparente Kommunikation, manuelle Korrekturoption in Zukunft. |
+| Kategorie                | Risiko                                                                       | Beschreibung / mögliche Ursache                                                            | Gegenmassnahmen                                                             |
+|--------------------------|------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| **Technologie**          | Fehlende Stabilität oder Bugs in neuen Frameworks (Rust, Axum, React Native) | Da moderne Tools verwendet werden, können Bibliotheken oder Toolchains noch instabil sein. | Regelmässige Updates, Tests, Nutzung stabiler Versionen, Backup-Strategie.  |
+| **Integration (OpenAI)** | API-Änderungen, Rate Limits oder Kostensteigerung bei OpenAI.                | Abhängigkeit von externem Dienst.                                                          | Caching, Rate-Limit-Handling, Fallback-Strategie, Dokumentation der Limits. |
+| **Ressourcen**           | Zeitmangel oder Ausfall von Teammitgliedern.                                 | Projektarbeit neben Schule/Arbeit, begrenzte Zeitfenster.                                  | Klare Planung, Priorisierung der Kernfunktionen, einfache MVP-Ziele.        |
+| **Infrastruktur**        | Datenverlust oder Ausfall von MinIO/PostgreSQL.                              | Fehlerhafte Deploys, Hardware-Probleme.                                                    | Regelmässige, verschlüsselte Backups, Restore-Tests, Monitoring.            |
+| **Sicherheit**           | Verlust oder Missbrauch von API-Keys / JWT-Secrets.                          | Unachtsamer Umgang mit Secrets, fehlende Rotation.                                         | Nutzung von GitHub-Secrets, regelmässige Rotation, Zugriff nur für Admin.   |
+| **Skalierung**           | Lange Antwortzeiten bei vielen Fotos / Nutzern.                              | Vision-Analyse ist rechenintensiv.                                                         | Einführung einer Warteschlange (Queue) und Worker-Prozesse nach MVP.        |
+| **Benutzerakzeptanz**    | KI-Analyse liefert ungenaue Werte.                                           | Vision-Modelle sind nicht 100 % exakt.                                                     | Transparente Kommunikation, manuelle Korrekturoption in Zukunft.            |
 
 ---
 
 ### 2) Wartungs- und Supportkonzept
 
 #### Wartungsplan
+
 Nach dem **Go-Live** wird die Anwendung regelmässig gepflegt und verbessert:
 
 | Bereich                | Aktivität                                                     | Frequenz / Auslöser                                   |
@@ -309,7 +366,8 @@ Nach dem **Go-Live** wird die Anwendung regelmässig gepflegt und verbessert:
 | **SLA (informell)**       | Fehlerbehebung bei kritischen Problemen innerhalb von 1–3 Tagen (während aktiver Projektphase).    |
 | **On-Call / Notfallplan** | Bei Ausfällen Zugriff auf Server und Backup-Skripte; Wiederherstellung aus verschlüsseltem Backup. |
 
-Nach Projektabschluss ist kein offizieller On-Call-Support vorgesehen, aber das System bleibt dokumentiert und rekonstruierbar.
+Nach Projektabschluss ist kein offizieller On-Call-Support vorgesehen, aber das System bleibt dokumentiert und
+rekonstruierbar.
 
 ---
 
@@ -324,7 +382,8 @@ Nach Projektabschluss ist kein offizieller On-Call-Support vorgesehen, aber das 
 | **Versionierung**      | SemVer (MAJOR.MINOR.PATCH); Changelog in `docs/changelog/V_x.y.z.md`.                                                        |
 | **Post-Release-Tasks** | Überwachung nach Deployment, Kontrolle der Logs, kleiner Regressionstest.                                                    |
 
-Nach dem MVP folgt eine Wartungs-Release-Phase, in der kleinere Verbesserungen (Queue, UI-Optimierungen, Performance-Tuning) nach Bedarf veröffentlicht werden.
+Nach dem MVP folgt eine Wartungs-Release-Phase, in der kleinere Verbesserungen (Queue, UI-Optimierungen,
+Performance-Tuning) nach Bedarf veröffentlicht werden.
 
 ---
 

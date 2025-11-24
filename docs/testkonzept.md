@@ -42,16 +42,15 @@ Es soll überprüft werden, ob:
 
 ## 3) Verbindung zwischen User Stories und Tests
 
-| User Story                                     | Wichtige Testfälle                                            | Testtyp                |
-|------------------------------------------------|---------------------------------------------------------------|------------------------|
-| **#1 Registrieren & Anmelden**                 | UT-01 (Passwort-Hashing), UT-02 (JWT-Signatur), IT-02 (Login) | Unit / Integration     |
-| **#2 Lebensmittel erfassen**                   | IT-03 (Upload + Analyse), E2E-01 (Kompletter Flow)            | Integration / E2E      |
-| **#3 Kalorien & Nährwerte berechnen**          | E2E-01, NF-01 (Performance)                                   | E2E / Nicht-funktional |
-| **#4 Personalisierte Menüvorschläge**          | noch nicht umgesetzt                                          | –                      |
-| **#5 Sichere und benutzerfreundliche Nutzung** | SEC-01 (Unauthorized-Access), Blackbox UX-Test                | Sicherheits- / Manuell |
-| **#6 Framework-Grundstruktur**                 | CI-Lint-/ Build-Tests, Unit-Tests                             | CI / Unit              |
-| **#7 CI/CD-Pipeline & Deployment**             | Pipeline-Run in GitHub Actions                                | CI Automatisierung     |
-| **#8 Mockups / UI-Design**                     | Manuelle UX-Validierung                                       | Blackbox               |
+| User Story                                     | Wichtige Testfälle                                                                                                                                                                                                             | Testtyp                  |
+|------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------|
+| **#1 Registrieren & Anmelden**                 | **UT-01** Passwort-Hashing<br>**UT-02** JWT-Signatur/Verifizierung<br>**IT-01** Registrierung<br>**IT-02** Login<br>**IT-03** Refresh-Flow                                                                                     | Unit / Integration       |
+| **#2 Lebensmittel erfassen (Meal erstellen)**  | **UT-03** Bild-Validierung/Hilfsfunktionen<br>**IT-04** `POST /meals` erstellt Eintrag + Status `pending`<br>**IT-05** KI-Analyse wird gestartet<br>**E2E-01** Kompletter Flow (Register → Login → Upload → Status → Ergebnis) | Unit / Integration / E2E |
+| **#3 Nährwerte & Berechnung**                  | **IT-06** Speicherung der Nutrition-Daten<br>**IT-07** SQL-Aggregation Tages/Woche<br>**E2E-02** Anzeige der Statistiken im Frontend                                                                                           | Integration / E2E        |
+| **#5 Sichere und benutzerfreundliche Nutzung** | **SEC-01** Zugriff ohne Token → 401<br>**SEC-02** Zugriff auf fremde Meal-ID verhindert<br>**UX-01** Blackbox-Test in der App                                                                                                  | Sicherheit / Manuell     |
+| **#6 Framework-Grundstruktur**                 | **UT-04** Helper-Funktionen/Parser<br>CI-Lint/Build                                                                                                                                                                            | Unit / CI                |
+| **#7 CI/CD-Pipeline & Deployment**             | CI-Pipeline-Run, Image-Build                                                                                                                                                                                                   | CI Automatisierung       |
+| **#8 UI / Mockups**                            | **UX-02** Navigations- und Bedienungstests                                                                                                                                                                                     | Manuell                  |
 
 ---
 
@@ -92,17 +91,16 @@ Testdaten dürfen keine realen Benutzerdaten enthalten.
 
 ## 7) Testfälle (Beispiele)
 
-| ID         | Testfall            | Beschreibung                               | Erwartetes Ergebnis                                           |
-|------------|---------------------|--------------------------------------------|---------------------------------------------------------------|
-| **UT-01**  | Passwort-Hashing    | Passwort wird korrekt gehasht und geprüft. | Hash wird erzeugt, Validierung „true“ für richtiges Passwort. |
-| **UT-02**  | JWT-Signatur        | Token wird signiert und verifiziert.       | Token gültig, Claims stimmen.                                 |
-| **IT-01**  | Registrierung       | `POST /auth/register` mit gültiger E-Mail. | `201 Created`, Benutzer in DB.                                |
-| **IT-02**  | Login               | `POST /auth/login` mit korrekten Daten.    | `200 OK`, Access/Refresh-Token.                               |
-| **IT-03**  | Upload + Analyse    | `POST /photos/confirm` mit gültigem Foto.  | `200 OK`, Datensatz mit Nährwerten gespeichert.               |
-| **E2E-01** | Kompletter Flow     | Registrierung → Upload → Anzeige in App.   | App zeigt Nährwerte (Kalorien, Protein, Fett, Score).         |
-| **E2E-02** | Fehlerhafte Eingabe | Foto beschädigt / ungültig.                | Fehlermeldung in App, kein Absturz.                           |
-| **NF-01**  | Performance         | Upload-Analyse ≤ 20 s.                     | Antwortzeit innerhalb Toleranz.                               |
-| **SEC-01** | Authentifizierung   | Zugriff ohne Token.                        | `401 Unauthorized`.                                           |
+| ID         | Testfall                 | Beschreibung                                  | Erwartetes Ergebnis                         |
+|------------|--------------------------|-----------------------------------------------|---------------------------------------------|
+| **UT-01**  | Passwort-Hashing         | Prüfen von Hash → Verify                      | Hash korrekt, Verify OK                     |
+| **UT-02**  | JWT-Signatur             | Signieren/Verifizieren                        | Claims korrekt                              |
+| **IT-01**  | Registrierung            | Endpunkt aufrufen                             | 201 Created                                 |
+| **IT-02**  | Login                    | Login gegen DB                                | 200 OK + Token                              |
+| **IT-03**  | Meal erstellen + Analyse | `POST /meals` erstellen                       | Meal-ID zurück, Status = pending/processing |
+| **E2E-01** | Vollständiger Flow       | Register → Login → Upload → Status → Ergebnis | App zeigt Analyse-Daten an                  |
+| **E2E-02** | Refresh-Token-Flow       | Login → Refresh → Geschützter Endpunkt        | Zugriff erfolgreich                         |
+| **E2E-03** | Fehlerhafte Eingaben     | Leeres Foto / beschädigt                      | Fehlercode, Analyse startet nicht           |
 
 ---
 
@@ -113,7 +111,7 @@ Testdaten dürfen keine realen Benutzerdaten enthalten.
   ```yaml
   cargo fmt --check
   cargo clippy --all-targets -- -D warnings
-  cargo test --all-features --workspace
+  cargo test --all-features --lib
     ```
 
   Ergebnis: alle Tests müssen erfolgreich sein.
@@ -217,4 +215,4 @@ Diese Berichte werden im Repo unter `docs/testberichte/` gespeichert.
 
 - **Abdeckungsgrad der Akzeptanzkriterien:** ca. **65 %** (Basisfunktionen vollständig, UI / KI-Teile folgen)
 - **Testautomatisierung:** Unit + Integration Tests laufen in CI/CD-Pipeline
-- **Ziel:** **80 % Abdeckung = Ideal**, ab **90 % = „Sehr gut / Exzellent“**
+- **Ziel:** **70 % Abdeckung = Ideal**, ab **80 % = „Sehr gut / Exzellent“**
