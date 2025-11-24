@@ -14,10 +14,6 @@ Git Repository fürs Projekt **MealMind**: KI Kalorietracker und Menuvorschlag
 
 ---
 
-## [DevOps Tools](docs/devops_tools.md)
-
----
-
 ## [Customer Journey](docs/customer_journey.md)
 
 ---
@@ -29,6 +25,16 @@ Git Repository fürs Projekt **MealMind**: KI Kalorietracker und Menuvorschlag
 ## [Kernfähigkeiten](docs/kernfaehigkeiten.md)
 
 ---
+
+## Kompetenzen
+
+### 2.1 [IDE](docs/devops_tools.md)
+
+### 2.3 [Dependencies](docs/dependecies.md)
+
+### 2.4 [Skripts und Umgebungsvariablen](docs/sckripts.md)
+
+### 3.3 [Artefakt-Verwaltung und Versionierung](docs/artefakt.md)
 
 ## Getting Started
 
