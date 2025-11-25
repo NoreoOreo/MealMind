@@ -216,7 +216,7 @@ Dieses Kapitel beschreibt **Authentifizierung & Autorisierung**, **Datenverschl√
 
 ### 1) Skizzen oder Prototypen des Interfaces
 
-## [Skizze/Mockup](../assets/MealMind Mockup.jpg)
+## [Skizze/Mockup](../assets/MealMind_Mockup.jpg)
 
 ### 2) Gestaltung von Layout
 
