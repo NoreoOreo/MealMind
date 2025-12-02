@@ -16,16 +16,14 @@ Umgebungsvariablen eingesetzt.
 - Weitere automatisierte Abläufe:
     - `cargo fmt`, `cargo clippy` und `cargo test` über GitHub Actions
     - automatischer Docker-Build und Push bei Tags
-    - lokales Starten von Backend/DB/MinIO per `docker compose`
+    - lokales Starten von Backend/DB/MinIO mit `docker compose`
 
 ### Umgebungsvariablen
 
 Es werden zwei Kategorien unterschieden:
 
 1. **Build-/Test-Variablen**  
-   Werden für Linting, Builds und Tests benötigt (z. B. `DATABASE_URL`, `MINIO_ENDPOINT`, `OPENAI_API_KEY` im
-   Testmodus).  
-   Diese Variablen werden in der CI (GitHub Actions) als Secrets verwaltet.
+   Werden für Linting, Builds und Tests benötigt (z. B. `POSTGRES_DB`, `MINIO_ENDPOINT` im Testmodus).
 
 2. **Runtime-Variablen (Betrieb)**  
    Notwendig für den täglichen Betrieb der Anwendung:

@@ -9,7 +9,7 @@ services:
       - ./data/db:/var/lib/postgresql/data
 
   minio:
-    image: minio/minio:latest
+    image: minio/minio:RELEASE.2025-07-23T15-54-02Z-cpuv1
     env_file:
       - ./.env
     command: server /data --console-address ":9001"
@@ -28,5 +28,6 @@ services:
       - ./.env
     environment:
       - DATABASE_URL=postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@db:5432/$POSTGRES_DB
+      - MINIO_ENDPOINT=http://minio:9000
     ports:
       - "8080:8080"
