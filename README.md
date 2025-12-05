@@ -36,6 +36,8 @@ Git Repository fürs Projekt **MealMind**: KI Kalorietracker und Menuvorschlag
 
 ### 3.3 [Artefakt-Verwaltung und Versionierung](docs/artefakt.md)
 
+### 5.2 [Services für die Auslieferung](docs/auslieferung.md)
+
 ## Getting Started
 
 TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
