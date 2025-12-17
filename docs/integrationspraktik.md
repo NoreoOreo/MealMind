@@ -111,17 +111,14 @@ Sie kombiniert Automatisierung mit Kontrolle und Nachvollziehbarkeit.
 ### 5.2 Quality Gates
 - CI muss **grün** sein (Tests, Linter)
 - Kein Release ohne erfolgreichen Build
-- Tags nur nach Review
 
 ### 5.3 Sicherheit
-- Secrets ausschliesslich über **GitHub Secrets**
 - Keine sensiblen Daten im Repository
 - Regelmässige Abhängigkeits-Updates
 
 ### 5.4 Docker & Build-Prozesse
 - Schlanke Docker-Images
 - Reproduzierbare Builds
-- Versionierte Images (`:vX.Y.Z`)
 
 ---
 
