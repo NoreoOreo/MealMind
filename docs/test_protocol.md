@@ -6,8 +6,6 @@
 **Tester:** Leonid Tsarov  
 **System:** Go-Live
 
----
-
 ### Testschritte
 
 1. Login mit Benutzer `admin@admin.com`
@@ -17,29 +15,21 @@
 5. Erneuter Abruf des Eintrags
 6. Ergebnis prüfen
 
----
-
 ### Erwartetes Ergebnis
 
 - Score > 0
 - Kalorien > 0
-
----
 
 ### Tatsächliches Ergebnis
 
 - **Schritt 3:** Testabbruch aufgrund eines Fehlers (`error`)
 - Die weiteren Testschritte konnten **nicht ausgeführt** werden.
 
----
-
 ### Abweichungen / Fehlerbeschreibung
 
 Der Test ist in **Schritt 3** fehlgeschlagen.  
 Beim direkten Abruf des Eintrags wurde ein unerwarteter Fehler zurückgegeben, wodurch der End-to-End-Flow nicht
 weitergeführt werden konnte.
-
----
 
 ### Testergebnis
 
@@ -53,8 +43,6 @@ weitergeführt werden konnte.
 **Tester:** Leonid Tsarov  
 **System:** Go-Live
 
----
-
 ### Testschritte
 
 1. Login mit `admin@admin.com`
@@ -62,21 +50,15 @@ weitergeführt werden konnte.
 3. Erneuerung des Access-Tokens über Refresh-Token
 4. Aufruf des geschützten Endpunkts `GET /meals` mit neuem Access-Token
 
----
-
 ### Erwartetes Ergebnis
 
 - Neuer Access-Token wird erfolgreich ausgestellt
 - Zugriff auf geschützten Endpunkt ist möglich
 
----
-
 ### Tatsächliches Ergebnis
 
 - Neuer Access-Token erfolgreich erhalten
 - Geschützter Endpunkt `GET /meals` liefert gültige Antwort
-
----
 
 ### Testergebnis
 
@@ -90,29 +72,21 @@ weitergeführt werden konnte.
 **Tester:** Leonid Tsarov  
 **System:** Go-Live
 
----
-
 ### Testschritte
 
 1. Login mit `admin@admin.com`
 2. Upload eines leeren oder beschädigten Fotos
 3. Start der Analyse
 
----
-
 ### Erwartetes Ergebnis
 
 - Analyse wird nicht gestartet
 - Fehlerstatus wird zurückgegeben
 
----
-
 ### Tatsächliches Ergebnis
 
 - System gibt einen Fehlerstatus (`error`) zurück
 - Analyse wird korrekt nicht gestartet
-
----
 
 ### Testergebnis
 
