@@ -31,6 +31,26 @@ Der Test ist in **Schritt 3** fehlgeschlagen.
 Beim direkten Abruf des Eintrags wurde ein unerwarteter Fehler zurückgegeben, wodurch der End-to-End-Flow nicht
 weitergeführt werden konnte.
 
+### Tatsächliche Response (Schritt 3)
+
+Beim direkten Abruf des Eintrags wurde folgende Response vom Backend zurückgegeben:
+
+```json
+{
+  "id": "c69e5994-a0de-419d-a402-6412fcd11c01",
+  "title": null,
+  "notes": null,
+  "context": "",
+  "status": "error",
+  "global_score": null,
+  "created_at": "2026-01-07T13:12:56.82832Z",
+  "nutrition": null,
+  "photos": [
+    "https://mealmind.edonssfall.com/mealmind/meals/c69e5994-a0de-419d-a402-6412fcd11c01/2511a4a1-1703-4257-a354-163a8475174c.jpg?x-id=GetObject&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=minioadmin%2F20260107%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260107T141300Z&X-Amz-Expires=1800&X-Amz-SignedHeaders=host&X-Amz-Signature=1ece30a45d124e33fb62c5545bc9149d601a31a64ba68c01f4e2ff4695515e80"
+  ]
+}
+```
+
 ### Testergebnis
 
 **Ergebnis:** nicht bestanden
