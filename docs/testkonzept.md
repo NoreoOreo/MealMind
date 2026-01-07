@@ -157,6 +157,8 @@ Tatsächlich: Score = 8, Kalorien = 430 kcal
 Ergebnis: bestanden
 ```
 
+### [Testprotokolle](test_protocol.md)
+
 ## 10) Testfrequenz & Verantwortlichkeiten
 
 | Testart                 | Verantwortlich | Frequenz                |
